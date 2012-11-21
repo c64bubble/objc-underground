@@ -1,0 +1,1 @@
+- Only compile GBAMemory.* and GBAChunk.* for libobjcarm pure C subcompilation !
