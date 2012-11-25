@@ -1,3 +1,0 @@
-- STalk "|" -> do block in arm objc
-- File.* are FNString related (see libobjcgbarm lib)
-- objc preprocessor code

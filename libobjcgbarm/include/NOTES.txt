@@ -1,7 +1,0 @@
-- FNString has a file buffer for concurrency on compilation of files
-- ecl (embedded common lisp) to run neslisp or m68k lisp or arm lisp from objc code (asm and machine code versions)
-- several VM architectures or subcompile for multiple langs
-- RamBuffer management for objects
-- threaded subCompilableRec for several files starting at '{' func/method definition
-- fuzzy system for bootstrapping processes in compilation
- 

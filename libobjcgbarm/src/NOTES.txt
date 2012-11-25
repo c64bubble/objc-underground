@@ -1,5 +1,0 @@
-
-- int NSString **str; types for arm compiler
-- return [_typenames matchWithKey: tni returns:FUTURE (= retrun returntype)]
-
--- Johan
