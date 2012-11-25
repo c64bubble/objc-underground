@@ -1,0 +1,2 @@
+. You can use <stdarg.h> functionality from libcarm (FIXME) for writing lua
+parsers

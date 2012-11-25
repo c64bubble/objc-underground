@@ -1,0 +1,3 @@
+. open XCode project file in XCode and compile (See subdirectory Splinter)
+
+. a seperate Makefile may be included for compiling in a terminal

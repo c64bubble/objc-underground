@@ -1,0 +1,6 @@
+This project does not use mutual exclusive compilation with #ifdef and so on
+it has seperate files for each platform you compile on because of features
+of that platform
+
+e.g. The src/ directory in the GBA/ directory includes these files for a GameBoy
+Advance platform
