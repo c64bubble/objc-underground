@@ -19,7 +19,7 @@
 
 @implementation ArmSubScanner
 
-- (int)scanFile:(FileName*)filename withCompiler:(Compiler*)compiler {
+- (int)scanFile:(FNString*)filename withCompiler:(Compiler*)compiler {
 
 	
 	return 0;

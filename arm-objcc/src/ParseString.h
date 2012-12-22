@@ -26,7 +26,7 @@
 - (int)skipSkips:(int)i;//return index after skipping \W
 - (NSString*)getWordUntilCharacter:(unichar)c startingAt:(int)i;
 - (bool) eqString:(NSString*)s;
-- (bool) isTypedWell;
+- (int) isTypedWell;
 - (NSString *)string;
 - (NSString*)substringAtIndex:(int)i;
 

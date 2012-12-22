@@ -16,7 +16,7 @@
 
 
 #import <Cocoa/Cocoa.h>
-
+#import "Tuple.h"
 
 enum { 
 	UNKNOWNFILEFORMAT = -2, 
@@ -36,5 +36,9 @@ enum {
 }
 
 -(void)addError:(int)ei;
+-(void)addErrorTuple:(Tuple*)t;
+-(NSMutableArray*)getErrors;
+-(int)errorset;
+-(void)clear;
 
 @end

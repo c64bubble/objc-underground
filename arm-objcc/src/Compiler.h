@@ -15,7 +15,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "FileName.h"
+#import "FNString.h"
 
 @interface Compiler : NSObject {
 
@@ -23,9 +23,9 @@
 	
 }
 
-- (void)compile:(FileName*)fileName;
-- (void)scanFile:(FileName*)fileName;
-- (int)scanFileRec:(FileName*)fileName;
-- (int)compilable:(FileName*)fileName;
+- (void)compile:(FNString*)fileName;
+- (void)scanFile:(FNString*)fileName;
+- (int)scanFileRec:(FNString*)fileName;
+- (int)compilable:(FNString*)fileName;
 
 @end

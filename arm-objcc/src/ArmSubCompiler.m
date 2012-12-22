@@ -27,7 +27,13 @@
 
 }
 
-- (void)compile:(FileName*)fileName {
+-(int)errorset  {
+
+	return  ([_errorsubcompiler errorset]);
+
+}
+
+- (void)compile:(FNString*)fileName {
 	//override for other sub compiler
 	if ([fileName isCSource] 
 		|| 
@@ -40,13 +46,13 @@
 	return;
 }
 
-- (void) scanFile:(FileName*)fileName {
+- (void) scanFile:(FNString*)fileName {
 	
 	[self scanFileRec:fileName];
 	
 }
 
-- (int)scanFileRec:(FileName*)fileName {
+- (int)scanFileRec:(FNString*)fileName {
 	int status = -1;
 	int error = -1;
 	//scan for pure C code
@@ -70,7 +76,7 @@
 	
 }
 
-- (int)subCompilable:(FileName *)fileName {
+- (int)subCompilable:(FNString *)fileName {
 	//scan for pure C code
 	FILE * fp;
 	
@@ -108,32 +114,38 @@
 	return 0;//file is pure C
 }
 
-- (int) subCompilableObjCSourceFile:(FileName*)fileName {
+- (int) subCompilableObjCSourceFile:(FNString*)fileName {
 	int idx = -1;
 	
 	int len = [[fileName buffer] length];
 	
 	for ( idx = 0; idx < len; idx++ ) {
-		[self subCompilableRec:(FileName*)fileName withIndex:&idx];
+		idx = [self subCompilableRec:(FNString*)fileName withIndex:idx];
 		//and again search for another objC function definition	
+
+		if ([self errorset]) {
+			[fileName addErrors:_errorsubcompiler];
+			[_errorsubcompiler clear];
+		}
 	}
 	
 	return 0;//FIXME
 }
 
-- (int)subCompilableRec:(FileName*)pstr withIndex:(int*)idx{
+- (int)subCompilableRec:(FNString*)pstr withIndex:(int)idx{
 	//compile pure C code in function definitions to ObjC source file which is compiled by compileRec method
-	int i = *idx;
+	int i = idx;
 	
 	int fno;
 	if ((fno = mkstemp("/tmp/bovisbuves.c")) < 0) {
-		*idx = i;
-		return SUBCOMPILENOMKSTEMP;
+		[self erroradd: SUBCOMPILENOMKSTEMP];
+		idx = i;
+		return idx;//SUBCOMPILENOMKSTEMP;
 	}
 	
     if (flock(fno, LOCK_SH) < 0) {
-		*idx = i;
-		return SUBCOMPILECANNOTLOCK;
+		idx = i;
+		return idx;//SUBCOMPILECANNOTLOCK;
 	}
 	
 	NSString*is;
@@ -156,8 +168,8 @@ lable1:
 					write(fno, (char *)is, [is length]);
 					pid_t pid1;
 					if ((pid1 = fork()) < 0) {
-						*idx = i;
-						return SUBCOMPILECANNOTFORK;
+						idx = i;
+						return idx;//SUBCOMPILECANNOTFORK;
 					} else if (pid1 == 0) {
 						is = @"";
 						goto lable1;
@@ -176,12 +188,13 @@ lable2:
 	while (++i && [[pstr buffer] characterAtIndex:i] != '-')//--FIXME - minus in C code && nested ((())) 
 		;
 	//function header (of definition
-	int declstatus = [self scanObjCMethodDeclarationIn:pstr withIndex:&i fino:fno];
+	idx = i;
+	int declstatus = [self scanObjCMethodDeclarationIn:pstr withIndex:idx fino:fno];
 	
 	//faulty declaration ?
 	if (declstatus < 0) {
-		*idx = i;
-		return SUBCOMPILENOT;
+		idx = i;
+		return idx;//SUBCOMPILENOT;
 	}
 
 	//block start
@@ -196,8 +209,8 @@ lable2:
 	while (++i && [[pstr buffer] characterAtIndex:i] != '}')
 		if (i+1 >= [[pstr buffer] length]) {
 			close(fno);
-			*idx = i;
-			return SUBCOMPILENOT;
+			idx = i;
+			return idx;//SUBCOMPILENOT;
 		} else {
 			NSString*s;
 			s += [pstr characterAtIndex:i];
@@ -208,16 +221,16 @@ lable2:
 	FILE *fp;
 	//FIXME -I./PWD/
 	if ((fp = popen((const char *)[NSString stringWithFormat:@"%@/%@", _compilerShellCommand, " -c /tmp/bovisbuves.c"], "r+")) == (FILE *)0) {
-		*idx = i;
-		return SUBCOMPILENOT;
+		idx = i;
+		return idx;//SUBCOMPILENOT;
 	}
 	if (flock(fileno(fp), LOCK_SH) < 0) {
-		*idx = i;
-		return SUBCOMPILECANNOTUNLOCK;
+		idx = i;
+		return idx;//SUBCOMPILECANNOTUNLOCK;
 	}
-	//try to subcompile for C code
-	FileName*subFileName = [FileName new];
-	subFileName = (FileName*)@"/tmp/bovisbuves.c";
+	//try to subcompile
+	FNString*subFileName = [FNString new];
+	subFileName = (FNString*)@"/tmp/bovisbuves.c";
 	[subFileName readInFile];
 	[self subCompilable:subFileName];
 	
@@ -225,23 +238,214 @@ lable2:
 	write(fno, "}", 1);
 
 	if (flock(fileno(fp), LOCK_UN) < 0) {	
-		*idx = i;
-		return SUBCOMPILECANNOTUNLOCK;
+		idx = i;
+		return idx;//SUBCOMPILECANNOTUNLOCK;
 	}
 	if (flock(fno, LOCK_UN) < 0) {
-		*idx = i;
-		return SUBCOMPILECANNOTUNLOCK;
+		idx = i;
+		return idx;//SUBCOMPILECANNOTUNLOCK;
 	}
 	
 	fclose(fp);
 
-	*idx = i;
-	return 0;
+	idx = i;
+	return idx;
 }
 
+//FIXME for source files -> compilable method
+- (int) scanObjCMethodDeclarationIn:(FNString*)fileName withIndex:(int)idx fino:(int)fno{
+	struct RType* returnType;
+	NSString*funcName;
+	NSMutableArray*Args;
+	
+	int oldidx = idx;
+	
+	while(++idx < [[fileName buffer] length]) {
+		if ([[fileName buffer] characterAtIndex:idx] == '(') {
+			returnType = NULL;
+			
+			idx = [self scanDeclarationForType:[fileName buffer] withIndex:idx returns:returnType];
+			if ([self errorset]) {
+				[_errorsubcompiler addError:SUBCOMPILEINVALIDRETURNTYPE];
+				idx = oldidx; 
+				continue;
+				////return SUBCOMPILEINVALIDRETURNTYPE;
+			}
+			idx = [self scanDeclarationForFuncName:[fileName buffer] withIndex:idx returns:funcName];
+			if ([self errorset]) {
+				[_errorsubcompiler addError:SUBCOMPILEINVALIDFUNCNAME];
+				idx = oldidx;
+				continue;
+				////return SUBCOMPILEINVALIDFUNCNAME;
+			}
+			idx = [self scanDeclarationForArgs:[fileName buffer] withIndex:idx returns:Args]; 
+			if ([self errorset]) {
+				[_errorsubcompiler addError:SUBCOMPILEINVALIDARGS];
+				idx = oldidx; 
+				continue;
+				////return SUBCOMPILEINVALIDARGS;
+			}
+			
+			if (oldidx == idx)
+				[_errorsubcompiler addError:SUBCOMPILEINVALIDFUNCDEF];
+				return idx;//SUBCOMPILEINVALIDFUNCDEF;
+		}
+	}
+	
+	[self writeDeclarationWithReturnTypeToHeader:returnType withFuncName:funcName andArgs:Args onfno:fno];
+	
+	return idx;
+	
+}
 
+- (int) writeDeclarationWithReturnTypeToHeader:(struct RType*)returnType withFuncName:(NSString*)funcName andArgs:(NSMutableArray*)Args onfno:(int)fno {
 
-- (int)compilablesource:(FileName*)fileName {
+	write(fno, (char *)returnType->rtypestring, strlen((char *)returnType->rtypestring));
+	write(fno, " ", 1);
+	write(fno, (char *)funcName, strlen((char *)funcName));
+	write(fno, "(", 1);
+	int j = -1;
+	while (++j < [Args count]-1) {
+		write(fno, (char *)[Args objectAtIndex:j], strlen((char *)[Args objectAtIndex:j]));
+		write(fno, (char *)", ",2);
+	}
+	write(fno, (char *)[Args objectAtIndex:j], strlen((char *)[Args objectAtIndex:j]));
+	write(fno, ")", 1);//FIXME ") {"
+	
+	return 0;
+
+}
+
+- (int) scanDeclarationForType:(NSString*)pstr withIndex:(int)idx returns:(struct RType*)rType{
+	
+	NSString*is;
+	int subcount;
+	while ([pstr characterAtIndex:idx] != ')' || subcount > 0) {
+		
+		if ([pstr characterAtIndex:idx] == '(') //scan for nested (((())) types e.g. function pointers
+			subcount++;
+		else if ([pstr characterAtIndex:idx] == ')') 
+			subcount--;
+
+		
+		if (idx > [pstr length]) {
+			rType = (struct RType*)malloc(sizeof(struct RType));
+			rType->rtypestring = @"";
+			rType->id = -1;
+			return -1;
+		}
+		is += [pstr characterAtIndex:idx];
+	}
+	
+	long r = random();
+	long r2 = random();
+	long r3 = r2;
+	long result = 0;
+	
+	if ([_classLocator locateType:[[TypeName init] ctor:r withTypeName:is]] < 0) {
+		rType = (struct RType*)malloc(sizeof(struct RType));
+		rType->rtypestring = @"";
+		
+		//make number string for id
+		for ( ;; ) {
+			
+			r3 = r2 % 2;
+			r2 -= (r2 % 10);//base 10
+			
+			result += r3;
+			
+		}
+		
+		rType->id = result;
+		//rType->id = r2 % INT_MAX;//--FIXME repeated ids
+		return idx;//-1;
+	}
+		
+	//skip whitespace
+	for ( ;[pstr characterAtIndex:idx] == ' '
+		   || 
+		   [pstr characterAtIndex:idx] == '\t'
+		   || 
+		 [pstr characterAtIndex:idx] == '\n'; )
+		idx++;
+	
+	rType = (struct RType*)malloc(sizeof(struct RType));
+	rType->rtypestring = is;
+	rType->id = r2 % INT_MAX;//--FIXME repeated ids
+	
+	return idx;//0;
+	
+}
+
+		  
+- (int) scanDeclarationForFuncName:(NSString*)pstr withIndex:(int)idx returns:(NSString*)rName{
+	NSString*is;
+	while ([pstr characterAtIndex:idx] != '(') {
+				  
+		if (idx > [pstr length]) {
+			rName = @"";
+			return idx;//-1;
+		}
+		is += [pstr characterAtIndex:idx];
+	}
+			  
+			  
+	rName = is;
+	return 0;	  
+}
+		  
+
+- (int) scanDeclarationForArgs:(NSString*)pstr withIndex:(int)idx returns:(NSMutableArray*)rArgs{
+	
+	NSMutableArray*lis;
+	struct RType*is;
+	while ([pstr characterAtIndex:idx] != '{') {
+		
+		while ([pstr characterAtIndex:idx] != '(') 
+			;
+		
+		if (idx > [pstr length]) {
+			rArgs = lis;
+			return idx;//0;
+		}
+		if ([self scanDeclarationForType:pstr withIndex:idx returns:is] < 0) {
+			rArgs = lis;
+			return idx;//-1;
+		}
+		else {
+			//scan for argname
+			NSString*argname;
+			while ((idx) < [pstr length]) {
+				if ([pstr characterAtIndex:idx] != ' ' || [pstr characterAtIndex:idx] != ')') {
+					argname += [pstr characterAtIndex:idx];
+				} else {
+					is->rtypestring = [NSString stringWithFormat:@"%@/%@",is,argname];
+					break;
+				}
+				idx++;
+			}
+		}	
+		
+		is += [pstr characterAtIndex:idx];
+		
+		//skip whitespace
+		while ([pstr characterAtIndex:idx] == ' ' 
+			   || 
+			   [pstr characterAtIndex:idx] == '\t' 
+			   || 
+			   [pstr characterAtIndex:idx] == '\n')
+			idx++;
+		
+		//FIXME rtypestring
+		if ([_classLocator locateType:[[TypeName init] ctor:-1 withTypeName:is->rtypestring]] < 0) {
+			[lis addObject:is->rtypestring];//--FIXME rtypestring
+		}
+	}
+	
+	return idx;//0;
+}
+
+- (int)compilablesource:(FNString*)fileName {
 	//subcompile(rec)
 	int status = [self subCompilable:fileName];
 	if (status < 0) {
@@ -254,7 +458,7 @@ lable2:
 
 
 //compile objC code in file fileName
-- (int)compileRec:(FileName*)fileName {
+- (int)compileRec:(FNString*)fileName {
 
 	if ([fileName readInFile] < 0)
 		return -1;
@@ -272,25 +476,32 @@ lable2:
 		FILE *fp = fopen("/tmp/bovisbuvesXXX", "w+");
 		int fno = fileno(fp);
 		//function header (of definition
-		int declstatus = [self scanObjCMethodDeclarationIn:fileName withIndex:&i fino:fno];
+		int i = [self scanObjCMethodDeclarationIn:fileName withIndex:i fino:fno];
 							  
 		//faulty declaration ?
-		if (declstatus < 0) {//never reached
+		if ([self errorset]) {//never reached
 			return SUBCOMPILENOT;
 		}
 	
 		while (++i && [fileContents characterAtIndex:i] != '{')//--FIXME - minus in C code && nested ((())) 
 			;
 		
-		[self compileObjC:&i];
+		i = [self compileObjC:i];
 	}
 	
-	return 0;
+	return i;
 							  
 }
 
-- (int)compileObjC:(int*)idx {
+- (int)compileObjC:(int)idx {
 	return 0;					  
 }
 							  
+- (void)erroradd:(int)ei {
+
+	[_errorsubcompiler addError: ei];	
+
+}
+
+
 @end

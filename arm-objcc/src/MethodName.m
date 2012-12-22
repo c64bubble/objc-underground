@@ -19,7 +19,7 @@
 
 @implementation MethodName
 
-- (MethodName *)ctor:(long)i withMethodName:(NSString *)n {
+- (MethodName *)ctor:(int)i withMethodName:(NSString *)n {
 	[super init];
 	methodid = i;
 	name = n;

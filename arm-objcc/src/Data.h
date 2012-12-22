@@ -15,7 +15,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-/////////#import "RamDisk.h"//--FIXME
+#import "../../libcarm/RamDisk.h"//--FIXME
 /*
  * The typename gets defined in memory (as a typename in a locator system)
  * and can be written to file
@@ -53,6 +53,7 @@ typedef struct __Data_struct { int id; int datalength; void *data; } __Data_stru
 
 @interface Data : NSObject {
 	__Data_struct *_data;
+	int type;
 }
 
 - (void*)data;

@@ -14,21 +14,25 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#import "ArmScanner.h"
 
-@implementation ArmScanner
+#import "TupleInt.h"
 
-- (int)scanFile:(FNString*)fileName withCompiler:(Compiler*)compiler {
-	
-	//init fileBuffer
-	[fileName scan];
-	[compiler scanFile:fileName];
-	
-	return 0;
+@implementation TupleInt 
+
+-(TupleInt*)addFirstInt:(int)fst andSecond:(NSObject*)snd {
+
+	first = fst;
+	second = snd;
+
+	return self;
 }
-/*
--(int)subCompile:(FNString*)fileName withCompiler:(Compiler*)compiler {
-	[fileName readInFile];//FIXME fileName scan 
-	[compiler scanFile
- */
+
+- (int)first {
+	return first;
+}
+
+- (NSObject*)second {
+	return second;
+}
+
 @end

@@ -19,7 +19,7 @@
 
 @implementation Scanner
 
-- (int)scanFile:(FileName*)filename {
+- (int)scanFile:(FNString*)filename {
 	
 	[filename scan ];
 	return 0;

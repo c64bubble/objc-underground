@@ -21,10 +21,16 @@
 - (int) setData:(void *)data {
 	memcpy(_data->data, data, sizeof(*data));
 	_data->datalength = sizeof(*data);
+
+	type = 0;//FIXME 
 }
 
 - (void*)data {
 	return _data;
+}
+
+- (int)type {
+	return type;
 }
 
 @end

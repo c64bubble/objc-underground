@@ -14,21 +14,29 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#import "ArmScanner.h"
 
-@implementation ArmScanner
+#import <Cocoa/Cocoa.h>
+#import "Error.h"
 
-- (int)scanFile:(FNString*)fileName withCompiler:(Compiler*)compiler {
-	
-	//init fileBuffer
-	[fileName scan];
-	[compiler scanFile:fileName];
-	
-	return 0;
+//file status & error ints 
+enum { SUBCOMPILENOT = -2,
+		SUBCOMPILENOMKSTEMP = -3,
+		SUBCOMPILENOFDOPEN = -4,
+		SUBCOMPILECANNOTFORK = -5,
+		SUBCOMPILECANNOTLOCK = -6,
+		SUBCOMPILECANNOTUNLOCK = -7,
+		SUBCOMPILEINVALIDRETURNTYPE = -8,
+		SUBCOMPILEINVALIDFUNCNAME = -9,
+		SUBCOMPILEINVALIDARGS = -10,
+		SUBCOMPILEINVALIDFUNCDEF = -11,
+
+		OBJCHEADERCOMPILE = -100,
+		OBJCSOURCECOMPILE = -101,
+		PURECCOMPILE = -102,
+};
+
+@interface ErrorSubCompiler : Error {
 }
-/*
--(int)subCompile:(FNString*)fileName withCompiler:(Compiler*)compiler {
-	[fileName readInFile];//FIXME fileName scan 
-	[compiler scanFile
- */
+
+-(void)addError:(int)ei;
 @end

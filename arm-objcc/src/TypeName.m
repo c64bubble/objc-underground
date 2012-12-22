@@ -51,7 +51,7 @@
 	else
 		return -1;
 }
-/***************
+
 - (int) subCompileSelfOn:(Disk*)disk {
 
 
@@ -68,9 +68,8 @@
 
 - (int)writeOn:(Disk*)disk data:(Data*)data{
 
-	[disk write:self data:[data data]];
+	//FIXME [disk write:self data:[data data]];
 
 }
-*****************/
 
 @end

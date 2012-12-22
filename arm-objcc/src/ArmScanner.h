@@ -15,7 +15,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#include "FileName.h"
+#include "FNString.h"
 ///////#import "Scanner.h"
 #import "Compiler.h"
 
@@ -23,6 +23,6 @@
 	
 }
 
-- (int)scanFile:(FileName*)filename withCompiler:(Compiler*)compiler;
+- (int)scanFile:(FNString*)filename withCompiler:(Compiler*)compiler;
 
 @end

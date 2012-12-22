@@ -14,21 +14,19 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#import "ArmScanner.h"
 
-@implementation ArmScanner
+#import <Cocoa/Cocoa.h>
 
-- (int)scanFile:(FNString*)fileName withCompiler:(Compiler*)compiler {
-	
-	//init fileBuffer
-	[fileName scan];
-	[compiler scanFile:fileName];
-	
-	return 0;
+@interface Tuple : NSObject {
+
+	NSObject *first;
+	NSObject *second;
+
 }
-/*
--(int)subCompile:(FNString*)fileName withCompiler:(Compiler*)compiler {
-	[fileName readInFile];//FIXME fileName scan 
-	[compiler scanFile
- */
+
+//ctor
+- (Tuple*)addFirst:(NSObject*)fst andSecond:(NSObject*)snd;
+- (NSObject*)first;
+- (NSObject*)second;
+
 @end

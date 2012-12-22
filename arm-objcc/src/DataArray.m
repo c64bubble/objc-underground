@@ -40,7 +40,7 @@
 //seek data returns 0 if found -1 if not found
 - (int) matchData:(Data *)tn {
 	void* rString;
-	[self matchDataId:[tn type] returns: rString];
+	//FIXME [self matchDataId:[tn type] returns: rString];
 	
 	if (rString > 0)
 		return 0;

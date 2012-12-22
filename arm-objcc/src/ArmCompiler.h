@@ -16,12 +16,12 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import "ArmCompilerBase.h"
-#import "FileName.h"
+#import "Compiler.h"
+#import "FNString.h"
 #import "ArmScanner.h"
 #import "ParseString.h"
 
-@interface ArmCompiler : ArmCompilerBase {
+@interface ArmCompiler : Compiler {
 
 	ArmScanner *_armScanner;
 	
@@ -31,12 +31,12 @@ enum {
 	NOTFOUND = -1, 
 };
 
-- (void)compile:(FileName*)fileName;
-- (void)scanFile:(FileName*)fileName;
-- (int)scanFileRec:(FileName*)fileName;
-- (int)compilable:(FileName*)fileName;
-- (int)compilableheader:(FileName*)fileName;
-- (int)compilablesource:(FileName*)fileName;
+- (void)compile:(FNString*)fileName;
+- (void)scanFile:(FNString*)fileName;
+- (int)scanFileRec:(FNString*)fileName;
+- (int)compilable:(FNString*)fileName;
+- (int)compilableheader:(FNString*)fileName;
+- (int)compilablesource:(FNString*)fileName;
 - (int) searchFor:(NSString*)fileBuffer char:(unichar)c startingAt:(int)startidx numberOfSkips:(int*)skips;
 - (int) searchFor:(NSString*)fileBuffer char:(unichar)c startingAt:(int)startidx;
 - (int) searchFor:(NSString*)fileBuffer string:(NSString*)s startingAt:(int)startidx;

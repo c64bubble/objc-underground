@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @implementation Compiler
 
-- (void)compile:(FileName*)fileName {
+- (void)compile:(FNString*)fileName {
 	
 }
 /*
@@ -27,15 +27,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	
 }
 */
-- (void) scanFile:(FileName*)fileName {
+- (void) scanFile:(FNString*)fileName {
 	
 }
 
-- (int) scanFileRec:(FileName*)fileName {
+- (int) scanFileRec:(FNString*)fileName {
 	return -1;
 }
 
-- (int)compilable:(FileName*)fileName {
+- (int)compilable:(FNString*)fileName {
 	return -1;
 }
 

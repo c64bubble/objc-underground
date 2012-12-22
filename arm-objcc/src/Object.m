@@ -18,15 +18,14 @@
 
 @implementation Object
 
-/**********
 - (int) writeOn:(Disk*)disk data:(void*)data {
 
 	if ([_typenames size] > 0) {
-		[disk write:[[_typenames objectWithIndex:0] string] data:data];
+		//FIXME [disk write:[[_typenames objectWithIndex:0] string] data:data];
 		return 0;
 	} else {
 		return -1;
 	}
 }
-**********/
+
 @end

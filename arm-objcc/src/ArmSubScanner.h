@@ -15,7 +15,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "FileName.h"
+#import "FNString.h"
 #import "Compiler.h"
 #import "ArmScanner.h"
 
@@ -23,6 +23,6 @@
 
 }
 
-- (int)scanFile:(FileName*)filename withCompiler:(Compiler*)compiler;
+- (int)scanFile:(FNString*)filename withCompiler:(Compiler*)compiler;
 
 @end

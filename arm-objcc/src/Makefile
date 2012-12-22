@@ -4,23 +4,18 @@
 CC = gcc 
 LD = ld
 CFLAGS = -g
-INCLUDES = -I../../GBA/src/ -I../../GBA/include 
+INCLUDES = 
 
 OBJS = \
-Structure.o \
-StructureBracket.o \
 ArmCompiler.o \
 ArmScanner.o \
 ArmSubCompiler.o \
 ArmSubScanner.o \
-ArmCompilerBase.o \
-ArmObjCCompiler.o \
 ClassLocator.o \
 Compiler.o \
 Dispatcher.o \
 Error.o \
-FileName.o \
-FileStream.o \
+FNString.o \
 Fuzzy.o \
 Object.o \
 GBAObject.o \
@@ -46,7 +41,7 @@ libmemory/Memory.o \
 
 all: lib 
 
-lib: $(OBJS) ######FIXME now in libcarm/fs $(LIBMEMORYOBJS)
+lib: $(OBJS) $(LIBMEMORYOBJS)
 	@echo "+++"
 	@echo "+++"
 	
@@ -56,4 +51,7 @@ clean:
 	rm *.o *.a
 
 .m.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.cc.o :
+	$(CC) $(CFLAGS) $(INLCUDES) -c $<

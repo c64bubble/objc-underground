@@ -15,12 +15,12 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#include "FileName.h"
+#include "FNString.h"
 
 @interface Scanner : NSObject {
 
 }
 
-- (int)scanFile:(FileName*)filename;
+- (int)scanFile:(FNString*)filename;
 
 @end

@@ -24,7 +24,7 @@
 	DataArray *_datas;
 	
 }
-/*****
-*- (int) writeOn:(Disk*)disk data:(void *)data;
-*****/
+
+- (int) writeOn:(Disk*)disk data:(void *)data;
+
 @end

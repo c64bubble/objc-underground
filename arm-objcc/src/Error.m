@@ -16,7 +16,7 @@
 
 
 #import "Error.h"
-
+#import "TupleInt.h"
 
 @implementation Error
 
@@ -27,7 +27,7 @@
 			break;
 		}
 		case UNKNOWNFILEFORMAT:{
-			[_errorstrs addObject: @"Unknown File Format. Not .m or .h"];
+			[_errorstrs addObject:[[TupleInt alloc] addFirstInt:ei andSecond: @"Unknown File Format. Not .m or .h"]];
 			break;
 		}
 		default:{
@@ -36,4 +36,21 @@
 	
 }
 
+-(void)addErrorTuple:(Tuple*)t {
+	[_errorstrs addObject:t];
+}
+
+//is there an error in the str db ?
+- (int)errorset {
+
+	return [_errorstrs count];
+}
+
+-(void)clear {
+	[ _errorstrs removeAllObjects];
+}
+
+-(NSMutableArray*)getErrors {
+	return _errorstrs;
+}
 @end

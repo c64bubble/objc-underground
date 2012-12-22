@@ -15,7 +15,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-/////#import "Disk.h"
+#import "../../libcarm/Disk.h"////
 
 #import "Data.h"
 
@@ -44,11 +44,10 @@ WRITETYPEDATA
 - (TypeName *)ctor:(long)i withTypeName:(NSString *)n;
 - (NSString *)string;
 - (long int)type;
-- (int) this:(TypeName*) tn isa:(const char *)str;
-/*****
-*- (int) subCompileSelfOn:(Disk*)disk;
-*- (int) subCompileSelfOn:(Disk*)disk withFormat:(int)fmt;
-- (int)writeOn:(Disk*)disk data:(Data*)data;
-******/
 
+- (int) subCompileSelfOn:(Disk*)disk;
+- (int) subCompileSelfOn:(Disk*)disk withFormat:(int)fmt;
+- (int) this:(TypeName*) tn isa:(const char *)str;
+
+- (int)writeOn:(Disk*)disk data:(Data*)data;
 @end
